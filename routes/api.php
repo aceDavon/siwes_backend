@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\EndorsementsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,5 +26,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\Auth'], fun
     // Route::apiResource('/invoices', InvoiceController::class);
     // Route::apiResource('/subscriptions', SubscriptionController::class);
     // Route::apiResource('/courses', CourseController::class);
+})->middleware('api');
+Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers'], function () {
+    Route::apiResource('/endorsements', EndorsementsController::class);
 })->middleware('api');
 // Route::post('/users/login', [UserController::class, 'login']);
