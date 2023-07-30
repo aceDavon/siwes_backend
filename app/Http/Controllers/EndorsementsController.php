@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\api\v1\StoreEndorsementRequest;
 use App\Models\Endorsements;
+use App\Models\LogBook;
 use Illuminate\Http\Request;
 
 class EndorsementsController extends Controller
@@ -17,11 +18,18 @@ class EndorsementsController extends Controller
 
     public function store(StoreEndorsementRequest $request)
     {
-        $this->authorize('endorse.create');
+        $validatedData = $request->validated();
 
-        $request->validated($request->all());
+        $endorsement = Endorsements::create($validatedData);
 
-        Endorsements::create($request->all());
+        if ($request->has('log_book_id')) {
+            $logBook = LogBook::findOrFail($request->log_book_id);
+            $logBook->is_isEndorsed = true;
+            $logBook->save();
+
+            $endorsement->logBook()->associate($logBook);
+            $endorsement->save();
+        }
 
         return 'Endorsement created successfully.';
     }

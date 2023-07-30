@@ -16,11 +16,9 @@ return new class extends Migration
             $table->string('description');
             $table->boolean('is_isEndorsed')->default(false);
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('endorsement_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('endorsement_id')->references('id')->on('endorsements');
         });
     }
 

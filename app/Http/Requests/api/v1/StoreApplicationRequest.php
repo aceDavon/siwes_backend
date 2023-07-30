@@ -23,7 +23,7 @@ class StoreApplicationRequest extends FormRequest
     {
         return [
             "user_id" => ["required", "exists:users,id"],
-            "opening_id" => ["required", "exists:openings, id"]
+            "opening_id" => ["required", "exists:openings,id"]
         ];
     }
 }

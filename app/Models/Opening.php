@@ -9,6 +9,14 @@ class Opening extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "organization",
+        "field",
+        "title",
+        "is_open",
+        "user_id"
+    ];
+
     public function organization()
     {
         return $this->belongsTo(User::class);

@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('endorsements', function (Blueprint $table) {
             $table->id();
-            $table->string('log number');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('log_book_id');
             $table->string('remarks')->nullable();
             $table->boolean('is_supervisor')->default(false);
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('log_book_id')->references('id')->on('log_books');
         });
     }
 

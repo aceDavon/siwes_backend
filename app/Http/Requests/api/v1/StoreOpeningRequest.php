@@ -22,11 +22,11 @@ class StoreOpeningRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "title" => 'required',
+            "title" => ['required', "min:15"],
             "organization" => "required",
-            "field" => "required",
+            "field" => ["required", "min:5"],
             "is_open" => "required",
-            "user_id" => "required"
+            "user_id" => ["required", "exists:users,id"]
         ];
     }
 }

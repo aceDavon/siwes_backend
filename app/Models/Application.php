@@ -9,6 +9,11 @@ class Application extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "user_id",
+        "opening_id"
+    ];
+
     public function student()
     {
         return $this->belongsTo(User::class);

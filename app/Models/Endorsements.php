@@ -10,8 +10,9 @@ class Endorsements extends Model
     use HasFactory;
 
     protected $fillable = [
-        'log_number',
-        'remarks'
+        'log_book_id',
+        'remarks',
+        'user_id'
     ];
 
     protected $hidden = [

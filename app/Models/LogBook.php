@@ -9,6 +9,11 @@ class LogBook extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "description",
+        "user_id"
+    ];
+
     public function endorsements()
     {
         return $this->hasMany(Endorsements::class);

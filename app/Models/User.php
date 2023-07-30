@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'matric_no',
         'password',
+        'user_role'
     ];
 
     /**
@@ -57,5 +58,9 @@ class User extends Authenticatable
     public function openings()
     {
         return $this->hasMany(Opening::class);
+    }
+    public function logBooks()
+    {
+        return $this->hasMany((LogBook::class));
     }
 }

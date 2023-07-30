@@ -22,8 +22,9 @@ class StoreEndorsementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "log_number" => "required",
-            "remarks" => ['required', 'min:50']
+            "log_book_id" => ["required"],
+            "remarks" => ['required', 'min:50'],
+            "user_id" => ['required', "exists:users,id"]
         ];
     }
 }

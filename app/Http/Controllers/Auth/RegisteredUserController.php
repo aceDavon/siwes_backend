@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\api\v1\StoreUserRequest;
+use App\Http\Requests\api\v1\UpdateUserRequest;
+use App\Http\Resources\api\v1\UserResource;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
@@ -18,26 +23,59 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): Response
+    public function index()
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'matric_no' => ['required', 'string', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        $users = User::with('endorsements', 'applications', 'openings', 'logBooks')->get();
+        return new Collection($users);
+    }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'matric_no' => $request->matric_no,
-            'password' => Hash::make($request->password),
-        ]);
+    public function show(User $user)
+    {
+        $transformedUser = User::with('endorsements', 'applications', 'openings')->find($user->id);
+        return new UserResource($transformedUser);
+    }
+
+    public function store(StoreUserRequest $request): Response
+    {
+        $request->validated($request->all());
+        $request['password'] = bcrypt($request['password']);
+
+        $user = User::create($request->all());
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return response()->noContent();
+        return response(['data' => $user, 'message' => 'User Created successfully']);
     }
+
+    public function update(Request $request, User $user): Response
+    {
+        $request->validate(
+            $request['is_Method'] === 'PUT' ?
+                [
+                    "email" => ['required', 'email'],
+                    "matric_no" => ['required', 'min:5'],
+                    "name" => ['required', 'max:50', 'min:5'],
+                    "user_role" => ['required', Rule::in(['student', 'lecturer', 'supervisor'])],
+                    'password' => ['required', 'confirmed', Rules\Password::defaults()]
+                ] : [
+                    "email" => ['sometimes', 'email'],
+                    "matric_no" => ['sometimes', 'min:5'],
+                    "name" => ['sometimes', 'max:50', 'min:5'],
+                    "user_role" => ['sometimes', Rule::in(['student', 'lecturer', 'supervisor'])],
+                    'password' => ['sometimes', 'confirmed', Rules\Password::defaults()]
+                ]
+            );
+        $userData = $request->except('password');
+
+        if ($request->has('password')) {
+            $userData['password'] = bcrypt($request->input('password'));
+        }
+
+        $user->update($userData);
+
+        return response(['message' => 'User '.$user->name.' updated successfully', "status" => "success", "code" => 201]);
+    }
+
 }

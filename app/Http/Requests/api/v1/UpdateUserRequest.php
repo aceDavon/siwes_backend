@@ -4,9 +4,8 @@ namespace App\Http\Requests\api\v1;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules;
 
-class StoreUserRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,12 +22,20 @@ class StoreUserRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $method = $this->method();
+        if ($method === 'PUT') {
+            return [
             "email" => ['required', 'email'],
             "matric_no" => ['required', 'min:5'],
             "name" => ['required', 'max:50', 'min:5'],
-            "user_role" => ['required', Rule::in(['student', 'lecturer', 'supervisor'])],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()]
-        ];
+            "user_role" => ['required', Rule::in(['student', 'lecturer', 'supervisor'])]
+            ];
+        }
+        return [
+            "email" => ['sometimes', 'email'],
+            "matric_no" => ['sometimes', 'min:5'],
+            "name" => ['sometimes', 'max:50', 'min:5'],
+            "user_role" => ['sometimes', Rule::in(['student', 'lecturer', 'supervisor'])]
+        ]
     }
 }
